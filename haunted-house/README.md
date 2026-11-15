@@ -27,11 +27,11 @@ A real-time cooperative, first-person 3D browser horror game for **1–8 players
 
 ## Architecture and limits
 
-Node.js HTTP server, vanilla HTML/CSS/JavaScript, native WebGL 3D and Web Audio, Server-Sent Events for 10 Hz authoritative state updates and HTTP POST for player actions. All movement, keys, ghost AI, player count and victory conditions are validated on the server. No external dependencies. Rooms are in memory and are lost on server restarts/redeploys; this version is intended for one Render instance, not a load-balanced deployment. Render free instances can sleep and take time to wake; game sessions are not persisted. No accounts, chat, or voice chat in this version. The ghost is computer-controlled, not player-controlled.
+Node.js HTTP server, vanilla HTML/CSS/JavaScript, CPU ray-cast first-person graphics and Web Audio, Server-Sent Events for 10 Hz authoritative state updates and HTTP POST for player actions. All movement, keys, ghost AI, player count and victory conditions are validated on the server. No external dependencies. Rooms are in memory and are lost on server restarts/redeploys; this version is intended for one Render instance, not a load-balanced deployment. Render free instances can sleep and take time to wake; game sessions are not persisted. No accounts, chat, or voice chat in this version. The ghost is computer-controlled, not player-controlled.
 
 ## 3D and audio
 
-The mansion is real-time first-person WebGL geometry, with floor, ceilings, walls, furnishings, 3D player avatars and collectible keys. The supplied ghost is a camera-facing textured sprite in the 3D world. Original procedural sound effects use Web Audio: atmospheric drone, footsteps, heartbeat, creaks, key chime and a capture sting. Audio unlocks after a click or tap; volume is adjustable in Settings. WebGL must be enabled in the browser. Desktop mouse lock may not be available on all browsers; drag and arrow-key look are alternatives.
+The default mansion renderer uses Canvas 2D ray-casting for a first-person 3D-style view, with textured floors, ceilings, walls, furniture, player sprites and collectible keys. The original WebGL renderer is retained in house3d.js but is not used by default. The supplied ghost is a camera-facing textured sprite in the 3D world. Original procedural sound effects use Web Audio: atmospheric drone, footsteps, heartbeat, creaks, key chime and a capture sting. Audio unlocks after a click or tap; volume is adjustable in Settings. WebGL is not required. Desktop mouse lock may not be available on all browsers; drag and arrow-key look are alternatives.
 
 ## Tests
 

@@ -1,3 +1,15 @@
+# v3.2 — Fixed visibility for every player
+
+- Brightness is locked at the previous default (Three.js exposure 1.23). The cinematic vignette is always on in gameplay. No player-facing brightness or vignette adjustment is available; old saved values are ignored. Flashlights and environmental lighting remain dynamic. Monitor brightness and device differences cannot be controlled by the game.
+
+## v3.1 — Cinematic audio & visibility update
+
+- Original 40-second stereo horror score loops in the house; it fades out on leaving. The score is bundled locally, with no external audio service. `make-music.py` is optional authoring source, not a deployment dependency.
+- Each player hears an independent lub-dub heartbeat based on 3D distance to the ghost: silent beyond 12 meters, rising smoothly toward 156 BPM at very close range, with a slower decay when the ghost retreats.
+- A gameplay-only vignette dims the center by 2.5% and the outer edges by up to 25%. The original exposure, lighting and flashlight are unchanged. Settings include master volume and background music volume.
+- Browser audio starts after a click or tap. The audio uses Web Audio, with a local WAV score.
+- `node --test game.test.js audio.test.js settings.test.js` runs the 17 dependency-free geometry/gameplay/audio tests; `npm test` additionally runs the WebSocket integration test after dependency installation.
+
 # The Haunted House — v3.0 True 3D
 
 A browser-based first-person cooperative horror prototype, built with Three.js/WebGL 2, Node.js and real WebSockets. This is a complete source project, not a static image, top-down game or raycast fake-3D renderer.
@@ -49,6 +61,6 @@ Ground: living room, dining room, kitchen, study. Upper: master bedroom, guest b
 
 ## Visual quality and limitations
 
-This is a true-3D prototype with original procedural textures and modeled furniture, not an AAA photorealistic asset pack or a recreation of Phasmophobia/Resident Evil. The sole supplied reference is the ghost image; the house follows the written interior description. PBR materials, baked color/bump/roughness maps, environment-map reflections, PCF soft shadows on the local ceiling light and flashlight, and adjustable brightness are included. There is no screen-space ambient occlusion, ray-traced reflection or professionally scanned model library. The ghost incorporates the provided image as a translucent accent to a 3D mesh; audio is synthesized rather than recorded. The front exit ends the game rather than opening an outdoor map. There is no jumping, voice chat or persistent account system.
+This is a true-3D prototype with original procedural textures and modeled furniture, not an AAA photorealistic asset pack or a recreation of Phasmophobia/Resident Evil. The sole supplied reference is the ghost image; the house follows the written interior description. PBR materials, baked color/bump/roughness maps, environment-map reflections, PCF soft shadows on the local ceiling light and flashlight, and fixed exposure are included. There is no screen-space ambient occlusion, ray-traced reflection or professionally scanned model library. The ghost incorporates the provided image as a translucent accent to a 3D mesh; audio is synthesized rather than recorded. The front exit ends the game rather than opening an outdoor map. There is no jumping, voice chat or persistent account system.
 
 WebGL 2 and hardware acceleration are required. Use the Low graphics setting on older hardware. If the engine fails to load or the graphics context is lost, the game displays an error instead of silently showing a blank world. The previous 2D fallback has intentionally been removed. The new gameplay/geometry tests passed in the authoring environment; dependency downloads were blocked there, so real browser rendering and the WebSocket integration test were not executed there. Test those on your Mac after installation or deployment; do not assume a successful Render build proves the client works.

@@ -1,11 +1,8 @@
 services:
   - type: web
-    name: the-haunted-house
+    name: haunted-house
     runtime: node
     plan: free
-    buildCommand: npm ci
+    buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /health
-    envVars:
-      - key: NODE_VERSION
-        value: 22.16.0

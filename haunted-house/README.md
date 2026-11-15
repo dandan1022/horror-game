@@ -1,38 +1,54 @@
-# The Haunted House
+# The Haunted House — v3.0 True 3D
 
-A real-time cooperative, first-person 3D browser horror game for **1–8 players**. No accounts, databases, or paid APIs required. The supplied ghost artwork is bundled locally.
+A browser-based first-person cooperative horror prototype, built with Three.js/WebGL 2, Node.js and real WebSockets. This is a complete source project, not a static image, top-down game or raycast fake-3D renderer.
 
-## Play locally
+## Deploy to your existing Render service
 
-1. Install Node.js 20 or newer.
-2. Open a terminal in this folder and run `npm ci` and `npm start`.
-3. Open `http://localhost:3000` in your browser. Create a lobby and start immediately to test solo. To test multiplayer, use separate browser tabs or devices and join the five-letter code before starting.
+1. Extract the ZIP. In your existing GitHub repository `dandan1022/horror-game`, replace the contents of the `haunted-house` directory with the contents of this ZIP's `haunted-house` directory. Do not create `haunted-house/haunted-house`. Remove old `public` files that are no longer included (old renderers etc.). If you retain the old package-lock, npm install will reconcile it; preferably delete the old lock and commit the new one after running npm install locally.
+2. Render > horror-game > Settings > Build & Deploy:
+   - Branch: `main`
+   - Root Directory: `haunted-house`
+   - Build Command: `npm install`
+   - Start Command: `npm start`
+   - Runtime: Node; Node 22 is specified in package.json.
+3. Save and select Manual Deploy > Deploy latest commit. Open the public service URL after the health check passes. Force refresh if you still see v2.
 
-## Deploy on GitHub and Render
+The server installs `three` and `ws` from npm and serves the engine locally; no browser CDN is required. The `public/assets` folder contains the texture files and user-supplied ghost art. No database, API key, Python runtime or external audio download is required. On Render, one instance is required for in-memory lobby sharing; restarts close all rooms. A free instance may sleep and take time to wake.
 
-**Updating the existing `dandan1022/horror-game` repository:** replace the files inside its existing `haunted-house` folder (do not create a second nested folder). Render Root Directory: `haunted-house`; Build Command: `npm ci`; Start Command: `npm start`. If Root Directory is blank, use `cd haunted-house && npm ci` and `cd haunted-house && npm start` instead.
+## Run locally (Mac or Windows with Node.js 22)
 
-1. Extract the ZIP. Create a new GitHub repository and upload **the contents of the `haunted-house` folder**, including `package.json`, `package-lock.json`, `server.js`, `game.js`, `render.yaml`, and `public/` at the repository root. Do not upload the ZIP as the only file.
-2. In Render, choose **New → Web Service**, connect GitHub and select the repository.
-3. Use Node as the runtime, leave Root Directory blank, set Build Command to `npm ci`, and Start Command to `npm start`. Choose the Free instance if available. The server automatically reads Render's `PORT` environment variable and listens on `0.0.0.0`. (Alternatively, create a Blueprint from `render.yaml`.)
-4. Deploy, then open the public HTTPS URL. Share that URL with your friends. Create a lobby, send the five-letter code, and start with one to eight connected players. Solo play uses the same ten keys, ghost, and escape objective.
+```sh
+cd haunted-house
+npm install
+npm test
+npm start
+```
+Open http://localhost:3000. Use two browser tabs with different names to test multiplayer. `npm test` runs nine game/geometry checks and one WebSocket integration test (the integration test requires installed npm dependencies). Do not double-click `public/index.html`; the Node server is necessary.
 
-## Rules and controls
+## Controls
 
-- **WASD:** move. **Mouse:** click game to lock pointer and look; alternatively drag the view or use arrow keys to look. **E:** collect a key, hide or leave a wardrobe, or use the main door. **F:** toggle flashlight. **Esc:** settings. Mobile has on-screen movement and interaction buttons; drag the view to look.
-- Explore seven areas of the mansion, including the library, bedroom, nursery, kitchen and dining room. The ten key locations are randomized each round, and the entire team shares progress.
-- The ghost patrols and pursues visible players; hiding in wardrobes prevents it from catching you. If caught, you respawn after five seconds and keep team progress.
-- Once all ten keys are found, each player must interact with the main door in the entrance hall. The team wins when everyone remaining in the lobby has escaped.
-- Only the host starts or restarts a game. New players may join only before a round starts. Disconnected players can reconnect within 45 seconds using the same browser tab; after that they are removed. Host can transfer to a connected player.
+WASD move, mouse look (click scene to capture pointer; drag or arrow keys also work), Shift sprint, C/Control crouch, E interact/collect/open or close a door/escape, H hide, F flashlight, Escape settings. On touchscreens use the on-screen movement/actions and drag to look. Audio begins after a click/tap.
 
-## Architecture and limits
+Create a lobby with a five-letter code, share it with friends, and start alone or with up to seven friends. Keys are shared, ghost positions and room doors are authoritative server state, and caught players return to the entrance with collected keys preserved. Collect ten keys across the four levels and return to the double front doors at the west end of the central entrance hall. All active players must escape.
 
-Node.js HTTP server, vanilla HTML/CSS/JavaScript, CPU ray-cast first-person graphics and Web Audio, Server-Sent Events for 10 Hz authoritative state updates and HTTP POST for player actions. All movement, keys, ghost AI, player count and victory conditions are validated on the server. No external dependencies. Rooms are in memory and are lost on server restarts/redeploys; this version is intended for one Render instance, not a load-balanced deployment. Render free instances can sleep and take time to wake; game sessions are not persisted. No accounts, chat, or voice chat in this version. The ghost is computer-controlled, not player-controlled.
+## House map / navigation
 
-## 3D and audio
+Four traversable levels: basement, ground floor, upper floor and attic. The stairwell is east of the main hall; enter it through the doors at the far ends of the eastern rooms if the middle doorway is blocked by stairs. Each stair flight climbs from its north end to its south end; alternate stair bays connect each level. Walk to a landing to turn around and descend. A room door opens with E; the main exit unlocks only once all ten keys are found.
 
-The default mansion renderer uses Canvas 2D ray-casting for a first-person 3D-style view, with textured floors, ceilings, walls, furniture, player sprites and collectible keys. The original WebGL renderer is retained in house3d.js but is not used by default. The supplied ghost is a camera-facing textured sprite in the 3D world. Original procedural sound effects use Web Audio: atmospheric drone, footsteps, heartbeat, creaks, key chime and a capture sting. Audio unlocks after a click or tap; volume is adjustable in Settings. WebGL is not required. Desktop mouse lock may not be available on all browsers; drag and arrow-key look are alternatives.
+Ground: living room, dining room, kitchen, study. Upper: master bedroom, guest bedroom, bathroom, children's room. Basement: storage, laundry, boiler room, workshop. Attic: storage, old nursery, archive, trunk room. Closets throughout, hide behind the living room sofa or under upper-floor beds. H toggles hiding when nearby; the camera moves to the hiding location. The ghost can traverse stairs and chase exposed players.
 
-## Tests
+## Source and assets
 
-Run `npm test` to verify core gameplay and the live HTTP/SSE multiplayer flow. 
+- `server.js`: HTTP static server, WebSocket lobbies and snapshots.
+- `game.js`: authoritative movement, ghost pathfinding, doors, hiding, keys, escaping.
+- `public/world.js`: shared level geometry, prop placement, collision and stair motion.
+- `public/house.js`: genuine Three.js scene, perspective camera, furniture meshes, material maps, dynamic lighting/shadows and model animation. Static geometry is batched by material/level.
+- `public/app.js`: menu, game input, multiplayer client, HUD and settings.
+- `public/audio.js`: generated ambience, spatial footsteps, creaks, whispers, heartbeat, pickup and encounter audio using Web Audio.
+- `public/assets`: original 1024 px color/bump/roughness maps and supplied ghost image. `make-textures.py` is optional offline regeneration tooling (requires Pillow and numpy); not needed to play.
+
+## Visual quality and limitations
+
+This is a true-3D prototype with original procedural textures and modeled furniture, not an AAA photorealistic asset pack or a recreation of Phasmophobia/Resident Evil. The sole supplied reference is the ghost image; the house follows the written interior description. PBR materials, baked color/bump/roughness maps, environment-map reflections, PCF soft shadows on the local ceiling light and flashlight, and adjustable brightness are included. There is no screen-space ambient occlusion, ray-traced reflection or professionally scanned model library. The ghost incorporates the provided image as a translucent accent to a 3D mesh; audio is synthesized rather than recorded. The front exit ends the game rather than opening an outdoor map. There is no jumping, voice chat or persistent account system.
+
+WebGL 2 and hardware acceleration are required. Use the Low graphics setting on older hardware. If the engine fails to load or the graphics context is lost, the game displays an error instead of silently showing a blank world. The previous 2D fallback has intentionally been removed. The new gameplay/geometry tests passed in the authoring environment; dependency downloads were blocked there, so real browser rendering and the WebSocket integration test were not executed there. Test those on your Mac after installation or deployment; do not assume a successful Render build proves the client works.
